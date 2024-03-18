@@ -647,7 +647,7 @@ FTP
 
 Configured in the same way as the lombe FTP
 
-NIS Cliente
+NIS Client
 
 It was configured in the same way as the lombe NIS Slave, with the exception of the command
 “/usr/lib64/yp/ypinit –s”
