@@ -3,32 +3,30 @@
 
 Implemented a network infrastructure that was easily scalable based on business volume.  Configured the following services: IP, FTP, YUM, HTTP, DNS, NIS, DHCP, NFSv4, Samba, and openLAD. 
 
-Introdução
-Este relatório tem como objectivo explicar e especificar a implementação da
-infraestrutura de rede Linux 100% Open Source para a empresa Best Soft Lda.
+Introduction
+In this project I implemented a 100% Open Source Linux network infrastructure for a company.
 
-Obs: os textos em verde são comandos executados no terminal como root e os textos
-em azul são alterações em ficheiros.
+Note: the texts in green are commands executed in the terminal as root and the texts
+in blue are changes to files.
 
-Obs: Desactivou-se o firewall “iptables” nos servidores e depois activou-se:
+Note: The “iptables” firewall was disabled on the servers and then activated:
 #service iptables off
 #iptables –F
 
-Servidor “kwanza”
-Tabela de partições do servidor kwanza
+“kwanza” server
+kwanza server partition table
 ![image](https://github.com/jose-ambrosioo/system_administration_using_linux/assets/59221796/13b87c51-c7b2-4700-b609-5860e1c0a1c8)
 
-Hostname/IP estático
-Nome da máquina “kwanza.bestsoft.com”
-IP da máquina “192.168.10.1”
+Static hostname/IP
+Machine name “kwanza.bestsoft.com”
+Machine IP “192.168.10.1”
 
 YUM/FTP
-PARA REPOSITÓRIO DO RHEL 6
-Montou-se a Drive do DVD onde estava a imagem do RHEL 6
+FOR RHEL 6 REPOSITORY
+The DVD Drive was mounted where the RHEL 6 image was located
 [root@kwanza ~]# mount /dev/cdrom /media
 
-Foi-se para o directório onde estava montada a Drive do DVD com a imagem do RHEL6 e para o
-directório Packages e instalou-se os seguintes pacotes
+We went to the directory where the DVD Drive with the RHEL6 image is mounted and to the Packages directory and installed the following packages
 
 [root@kwanza ~]# cd /media/RHEL-6.6\ Server.x86_64/Packages/
 [root@kwanza ~]# rpm -ivh vsftpd*
@@ -36,12 +34,12 @@ directório Packages e instalou-se os seguintes pacotes
 [root@kwanza ~]# rpm -ivh python-deltarpm*
 [root@kwanza ~]# rpm -ivh createrepo*
 
-A pasta do repositório “/var/ftp/pub/repo” foi criada automaticamente após instalação do FTP
+After installing FTP, the repository folder “/var/ftp/pub/repo” was automatically created.
 
-Criou-se o repositório tendo como base de dados o diretório /var/ftp/pub/repo/Packages
+The repository was created using the /var/ftp/pub/repo/Packages directory as its database
 [root@kwanza ~]# createrepo --database /var/ftp/pub/repo/Packages/
 
-Editou-se o ficheiro que contém as configurações do YUM
+The file containing the YUM settings has been edited.
 
 [root@kwanza ~]# nano /etc/yum.repos.d/rhel-source.repo
 [rhel-source]
@@ -52,14 +50,14 @@ gpgcheck=0
 #gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
 FTP
-Activou-se o serviço vsftpd para arancar ao iniciar a máquina
+The vsftpd service was enabled to start when starting the machine
 
 [root@kwanza ~]# chkconf vsftpd on
 
-Iniciar o serviço
+Start the service
 [root@kwanza ~]# service vsftpd start
 
-Ver o acesso ao FTP
+View FTP access
 [root@kwanza ~]# getsebool -a | grep ftp
 allow_ftpd_anon_write --> off
 allow_ftpd_full_access --> off
@@ -71,22 +69,22 @@ ftpd_use_passive_mode --> off
 httpd_enable_ftp_server --> off
 tftp_anon_write --> off
 
-Permitir o accesso a conteúdo do FTP
+Allow access to FTP content
 [root@kwanza ~]# setsebool -P allow_ftpd_full_access on
 
 HTTP
-Instalou-se os pacotes para o HTTP
+HTTP packages have been installed
 [root@kwanza ~]# yum install httpd*
 
-Criou-se uma página index.html em /var/www/html/
+An index.html page was created in /var/www/html/
 
-Acivou-se o HTTP nos níveis certos e iniciou-se o serviço
+HTTP was activated at the right levels, and the service started
 [root@kwanza ~]# chkconfig --list httpd
 httpd 0:off 1:off 2:off 3:off 4:off 5:off 6:off
 [root@kwanza ~]# chkconfig httpd on
 [root@kwanza ~]# service httpd start
 
-3 – Configurou-se o httpd, adicionando a seguinte configuração
+3 – Configure httpd, adding the following configuration
 [root@kwanza ~]# nano /etc/httpd/conf/httpd.conf
 <VirtualHost *:80>
  ServerAdmin root@kwanza.bestsoft.com
@@ -97,10 +95,10 @@ httpd 0:off 1:off 2:off 3:off 4:off 5:off 6:off
 </VirtualHost>
 
 DNS
-Instalou-se os pacotes para o DNS
+DNS packages have been installed
 [root@kwanza ~]# yum install bind*
 
-Editou-se o ficheiro de configuração e colocou-se as principais zonas para tradução
+Edited the configuration file and placed the main areas for translation
 [root@kwanza ~]# nano /etc/named.conf
 options {
 listen-on port 53 { 127.0.0.1; 192.168.10.1; };
@@ -119,7 +117,7 @@ listen-on port 53 { 127.0.0.1; 192.168.10.1; };
  managed-keys-directory "/var/named/dynamic";
 };
 
-Configurou-se o ficheiro “/etc/named.rfc1912.zones”
+The file “/etc/named.rfc1912.zones” was configured
 zone "bestsoft.com" IN {
  type master;
  file "forward.zone";
@@ -131,8 +129,8 @@ zone "10.168.192.in-addr.arpa" IN {
  allow-update { none; };
 };
 
-Criou-se e editou-se os ficheiros zone, traduzindo as máquinas que precisam de tradução nas
-zonas identificadas
+Zone files were created and edited, translating the machines that need translation into the
+identified zones
 [root@kwanza]# cp /var/named/named.localhost /var/named/foward.zone
 [root@kwanza]# cp / var/named/named.loopback /var/named/reverse.zone
 [root@kwanza named]# nano /var/named/forward.zone
@@ -154,8 +152,8 @@ kwanza A 192.168.9.1
 lombe A 192.168.9.2
 gazela A 192.168.9.10
 
-Os passos são iguais aos que foram feitos no “foward.zone” excepto as últimas 5 linhas, o “1”,
-“2” e o “3” representam os últimos octetos representados nos endereços IPs
+The steps are the same as those done in “forward.zone” except the last 5 lines, the “1”,
+“2” and “3” represent the last octets represented in IP addresses
 [root@kwanza]# nano /etc/reverse.zone
 1 IN PTR kwanza. bestsoft.com.
 2 IN PTR lombe. bestsoft.com.
@@ -163,86 +161,83 @@ Os passos são iguais aos que foram feitos no “foward.zone” excepto as últi
 1 IN PTR bestsoft.com.
 1 IN PTR www. bestsoft.com.
 
-Adicionou-se os nomes das principais maquinas com ip fixo, para tradução de endereços e
-mesmo que o servidor DNS falhe ainda haverá comunicação com essas máquinas.
-Obs: se esquecer isto o servidor não conseguirá traduzir os ips e não encontrará as máquinas
-pelo nome.
+The names of the main machines with fixed IP were added, for address translation and
+Even if the DNS server fails there will still be communication with these machines.
+Note: if you forget this, the server will not be able to translate the IPs and will not find the machines by the name.
 [root@kwanza]# nano /etc/hosts
 192.168.10.1 kwanza.bestsoft.com www.bestsoft.com
 192.168.10.2 lombe.bestsoft.com
 192.168.10.10 gazela.bestsoft.com
 
-Configurou-se o DNS do servidor
+The server DNS has been configured
 [root@kwanza]# nano /etc/sysconf/network-scripts/ifcfg-eth0
 DNS1=192.168.10.1
 DOMAIN=bestsoft.com
 
-Activou-se o DNS nos níveis certos, iniciou-se e verificou-se o serviço
+DNS has been activated at the right levels, the service has been started and verified
 [root@kwanza]# chkconfig dnsmasq on
 [root@kwanza]# service dnsmasq start
 [root@kwanza]# nslookup kwanza
 
-NIS Primário
+NIS Primary
 
-Instalou-se os pacotes para o NIS servidor e cliente
+Installed the packages for the NIS server and client
 [root@kwanza]# yum install yp* -y
 
-Configurou-se o servidor NIS adicionando as seguintes linhas
+The NIS server was configured by adding the following lines
 [root@kwanza]# nano /etc/yp.conf
 domain nisbestsoft.com server kwanza.bestsoft.com
 ypserver kwanza
-7
 
-Definiu-se o domínio NIS no qual o servidor e os cliente NIS irão pertencer, todos os servidores
-e clientes NIS devem pertencer ao mesmo domínio
+The NIS domain in which the NIS server and clients will belong has been defined, all servers
+and NIS clients must belong to the same domain
 [root@kwanza]# nano /etc/sysconfig/network
 NETWORKING=yes
 HOSTNAME=kwanza.nisbestsoft.com
 NISDOMAIN= nisbestsoft.com
 
-Configurou-se o domainname e o ypdomainname
+Configured the domainname and ypdomainname
 [root@kwanza /]# domainname nisbestsoft.com
 [root@kwanza /]# ypdomainname nisbestsoft.com
 
-Configurou-se o securenets
+Securenets has been configured
 [root@kwanza /]# nano /var/yp/securenets
 host 127.0.0.1
 255.255.255.0 192.168.10.0
 
-Iniciou-se os serviços portmap e o NIS servidor
+Portmap services and NIS server started
 [root@kwanza /]# service rpcbind start
 [root@kwanza /]# service ypserv start
 
-Verficar o ypserv
+Check ipserv
 [root@kwanza /]# rpcinfo -u localhost ypserv
 program 100004 version 1 ready and waiting
 program 100004 version 2 ready and waiting
 
-Criou-se a base de dados do servidor NIS e inicializou-se o NIS map, onde “ –m ” indica que este
-é o NIS Master Server
+The NIS server database was created and the NIS map was initialized, where “ –m ” indicates that this is the NIS Master Server
 [root@kwanza]# /usr/lib64/yp/ypinit –m
 
-Inicializou-se o serviço ypbind
+The ypbind service has started
 [root@kwanza /]# service ypbind start
 
-Iniciou-se o serviço que permite os usuários NIS mudarem as suas senhas
+The service that allows NIS users to change their passwords has started
 [root@kwanza /]# service yppasswdd start
 
-Iniciou-se o daemon de transferência de base de dados NIS
+NIS database transfer daemon started
 [root@kwanza /]# service ypxfrd start
 
-Configurou-se os serviços NIS para arrancarem ao inicializar a máquina
+NIS services were configured to start when booting the machine
 [root@kwanza /]# chkconfig rpcbind on
 [root@kwanza /]# chkconfig ypserv on
 [root@kwanza /]# chkconfig ypbind on
 [root@kwanza /]# chkconfig yppasswdd on
 [root@kwanza /]# chkconfig ypxfrd on
-Criou-se o diretório “/nishome” onde ficará a home de todos os usuários NIS
+The “/nishome” directory was created where the home of all NIS users will be located
 
 [root@kwanza /]# mkdir /nishome
 [root@kwanza /]# chcon --reference /home /nishome -R
 
-Adicionou-se as contas dos utilizadores NIS
+Added NIS user accounts
 [root@kwanza /]# useradd –p joao –d /nishome/joao -c 'Joao' joao
 [root@kwanza /]# useradd –p ana –d /nishome/ana -c 'Ana' ana
 [root@kwanza /]# useradd –p vasco –d /nishome/vasco -c 'Vasco' vasco
@@ -252,86 +247,86 @@ Adicionou-se as contas dos utilizadores NIS
 [root@kwanza /]# useradd –p admin_estagiario –d /nishome/admin_estagiario admin_
 estagiario -c 'Admin_estagiario' admin_estagiario
 
-Configurou-se as senhas dos utilizadores NIS
+NIS user passwords have been configured
 [root@kwanza]# passwd usuario
 
-Configurou-se 3 contas de utilizadores NIS para expirarem em 2018-06-20
+Configured 3 NIS user accounts to expire on 2018-06-20
 [root@kwanza]# chage -E 2018-06-20 ana
 [root@kwanza]# chage -l ana
 Account expires : Jun 20, 2018
 [root@kwanza]# chage -E 2018-06-20 maria
 [root@ kwanza]# chage -E 2018-06-20 teresa
 
-Para que os directórios home dos usuários NIS possam ser montados na máquinas clientes NIS
-exportamos a /nishome via NFS
+So that NIS users' home directories can be mounted on NIS client machines
+we export /nishome via NFS
 [root@kwanza]# nano /etc/exports
 /nishome *(rw)
 
-Para permitir que a base de dados do servidor NIS primário possa ser transferida para os NIS
+To allow the primary NIS server database to be transferred to the NIS
 Slaves:
 [root@kwanza]# nano /var/yp/Makefile
 NOPUSH=false
 
-Actualizou-se a base de dados
+The database has been updated
 [root@kwanza]# make -C /var/yp
 
-OBS: Sempre que um utilizador for adicionado devemos actualizar a base de dados do servidor
-NIS fazendo:
+NOTE: Whenever a user is added, we must update the server database
+NIS doing:
 [root@kwanza]# make -C /var/yp
 
-OBS2: Ao redefinir a senha de um usuário criado sem senha, excluir a senha encriptada no
-ficheiro /etc/shadow no servidor NIS
+NOTE2: When resetting the password of a user created without a password, delete the encrypted password in the
+/etc/shadow file on NIS server
 
 Segurança
 
-Para permitir apenas o usuário admin invocar o comando “su” em qualquer máquina ou
-servidor, em todas as máquinas definiu-se o grupo “wheel” como dono do comando su:
+To allow only the admin user to invoke the “su” command on any machine or
+server, on all machines the “wheel” group was defined as the owner of the su command:
 [root@kwanza /]# chgrp wheel /bin/su
 
-Mudou-se as permissões do /bin/su
+Changed the permissions of /bin/su
 [root@kwanza /]# chmod u=rws,g=rwx,o= /bin/su
 
-Adicionou-se o utilizador “admin” ao grupo “wheel”
+The user “admin” was added to the “wheel” group
 [root@kwanza /]# usermod –G wheel admin
 
-Para que o utilizador “admin_estagiario” apenas tenha permissão de reiniciar o Apache Web
-Server (restart do httpd) no servidor kwanza e para que os utilizadores admin e admin_estagiario
-tenham previlégios adicionais, adicionou-se o seguinte no ficheiro:
+So that the user “admin_estagiario” only has permission to restart Apache Web
+Server (httpd restart) on the kwanza server and for users admin and admin_estagiario
+have additional privileges, the following was added to the file:
 [root@kwanza /]# visudo
 admin_estagiario kwanza.bestsoft.com=/sbin/service httpd restart
 admin ALL=(ALL) ALL
 admin_estagiario ALL=(ALL) ALL
 
-Para que apenas as duas contas de administradores admin e admin_estagiario e root possam
-fazer login nos servidores kwanza e lombe, editou-se o ficheiro /etc/ssh/sshd_config nos
-referidos servidores e adicionou-se as seguinte linhas:
+So that only the two administrator accounts admin and admin_estagiario and root can
+login to the kwanza and lombe servers, the /etc/ssh/sshd_config file was edited in the
+mentioned servers and the following lines were added:
 [root@kwanza /]# nano /etc/ssh/sshd_config
 AllowUsers admin admin_estagiario root
 DenyUsers joao ana vasco maria teresa
 PermitRootLogin yes
 
-Configuração do servidor “lombe”
-Tabela de partições do servidor lombe
+“lombe” server configuration
+lombe server partition table
 ![image](https://github.com/jose-ambrosioo/system_administration_using_linux/assets/59221796/36421297-6a9c-4dde-817a-716188325630)
 
-Hostname/IP estático
+Static hostname/IP
 Nome da máquina “lombe.bestsoft.com”
 IP da máquina “192.168.10.2”
 
 YUM/FTP
-PARA REPOSITÓRIO DO RHEL 6
+FOR RHEL 6 REPOSITORY
 
-Montou-se a Drive do DVD onde estava a imagem do RHEL 6
+The DVD Drive was mounted where the RHEL 6 image was located
 [root@lombe ~]# mount /dev/cdrom /media
 
-Foi-se para o directório onde estava montada a Drive do DVD com a imagem do RHEL6 e para o
-directório Packages e instalou-se os seguintes pacotes
+We went to the directory where the DVD Drive with the RHEL6 image was mounted and to the
+Packages directory and installed the following packages
 [root@lombe ~]# cd /media/RHEL-6.6\ Server.x86_64/Packages/
 [root@lombe ~]# rpm -ivh vsftpd*
 
-A pasta do repositório “/var/ftp/pub/repo” foi criada automaticamente após instalação do FTP
+The repository folder “/var/ftp/pub/repo” was automatically created after installing FTP
 
-Editou-se o ficheiro que contém as configurações do YUM
+The file containing the YUM settings has been edited
 [root@lombe ~]# nano /etc/yum.repos.d/rhel-source.repo
 [rhel-source]
 name=Red Hat Enterprise Linux $releasever - $basearch - Source
@@ -342,26 +337,27 @@ gpgcheck=0
 #gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 FTP
 
-Activou-se o serviço vsftpd para arancar ao iniciar a máquina
+The vsftpd service was enabled to start when starting the machine
 [root@lombe ~]# chkconf vsftpd on
 Inicializou-se o serviço
 [root@lombe ~]# service vsftpd start
 HOSTS
 
-Configurou-se o ficheiro “/etc/hosts”
+The “/etc/hosts” file was configured
 [root@lombe ~]# nano /etc/hosts
 192.168.10.1 kwanza.bestsoft.com kwanza www.bestsoft.com
 192.168.10.2 lombe.bestsoft.com lombe
 192.168.10.10 gazela.bestsoft.com gazela
+
 DHCP
 
-Realizou-se a instalação e as configurações do DHCP
+DHCP installation and configurations were carried out
 [root@lombe ~]# yum install dhcp -y
 [root@lombe ~]# nano /etc/dhcpd.conf
 option domain-name “bestsoft.com”
 option domain-name-servers “kwanza.bestsoft.com”
 
-Definiu-se como o servidor DHCP oficial da rede
+Set itself as the network's official DHCP server
 subnet 192.168.10.0 netmask 255.255.255.0 {
  range 192.168.10.10 192.168.10.254;
  option domain-name-servers kwanza.bestsoft.com;
@@ -376,176 +372,178 @@ hardware Ethernet 00:0c:29:73:69:34;
 fixed-address 192.168.10.10;
 }
 
-Configurou-se o DHCP para iniciar ao inicializar a máquina e iniciou-se e ser
+DHCP was configured to start when booting the machine
 [root@lombe ~]# chkconfig dhcp on
 [root@lombe ~]# service dhcp start
 
-NIS Secundário
+NIS Secondary
 
-Instalou-se os pacotes para o NIS servidor e cliente
+Installed the packages for the NIS server and client
 [root@lombe ~]# yum install yp* -y
 
 
-Definiu-se o domínio NIS no qual o servidor e os clientes NIS irão pertencer
+The NIS domain to which the NIS server and clients will belong has been defined
 [root@lombe ~]# nano /etc/sysconfig/network
 NETWORKING=yes
 HOSTNAME=lombe.bestsoft.com
 NISDOMAIN=nisbestsoft.com
 
-Identificou-se todos os servidores NIS para este cliente
+All NIS servers for this client have been identified
 [root@lombe ~]# nano /etc/yp.conf
 domain nisbestsoft.com server kwanza.bestsoft.com
 domain nisbestsoft.com server lombe.bestsoft.com
 ypserver kwanza
 
-Para sincronização de usuários e informação de contas em todas as máquinas do domínio
-editou-se o ficheiro:
+For synchronizing user and account information across all machines in the domain
+the file was edited:
 [root@lombe ~]# nano /etc/nsswitch.conf
 
-e mudou-se os campos “passwd, shadow e group” para:
+and changed the “passwd, shadow and group” fields to:
 passwd: files nis
 shadow: files nis
 group: files nis
 
-Configurou-se o domainname e o ypdomainname
+Configured the domainname and ypdomainname
 [root@lombe ~]# domainname nisbestsoft.com
 [root@lombe ~]# ypdomainname nisbestsoft.com
 
-Configurou-se os serviços NIS para arrancarem ao inicializar a máquina
+NIS services were configured to start when booting the machine
 [root@lombe ~]# chkconfig rpcbind on
 [root@lombe ~]# chkconfig ypbind on
 
-Verficar o ypbind
+Check ypbind
 [root@lombe ~]# rpcinfo -u localhost ypbind
 program 100004 version 1 ready and waiting
 program 100004 version 2 ready and waiting
 
-Actualizou-se o ficheiro da base de dados do servidor NIS e inicializou-se o NIS map, onde “ –s ”
-indica que este é o NIS Slave Server
+The NIS server database file was updated and the NIS map was initialized, where “ –s ”
+indicates that this is the NIS Slave Server
 [root@lombe ~]# ypcat passwd
 [root@lombe ~]# /usr/lib64/yp/ypinit –s lombe
 
-Para que os clientes NIS montem as pastas “/nishome” permanentemente editou-se o ficheiro
-fstab nos clientes(lombe e gazela) adicionando-se as configurações no final do ficheiro:
+For NIS clients to mount the “/nishome” folders permanently, the file was edited
+fstab on clients (Lombe and Gazelle) adding the settings at the end of the file:
 [root@lombe ~]# nano /etc/fstab
 kwanza:/nishome/ /nishome/ nfs defaults 0 0
 
-Obs: iniciar o serviço nfs no servidor kwanza e fazer com que este arranque sempre que a
-máquina iniciar.
+Note: start the nfs service on the kwanza server and make it start whenever the
+machine start.
 
-Obs2: para actualizar o fstab sem reiniciar uma máquina: #mount -a
+Note2: to update fstab without restarting a machine: #mount -a
 
-Gestão de partições (Criação de Partições, VG, PV, LVM e SWAP)
-Adicionou-se um disco IDE de 12 Gb e iniciou-se a máquina
+Partition management (Partition Creation, VG, PV, LVM and SWAP)
+A 12 Gb IDE disk was added and the machine started
 
-CRIAÇÃO DAS PARTIÇÕES
+CREATION OF PARTITIONS
 
-Executou-se o comando que nos permite fazer a gestão de partições do discos, para editar o
-disco adicionado
+The command that allows us to manage disk partitions was executed, to edit the
+disk added
 [root@lombe ~]# fdisk /dev/sdc
 
-1-Selecionou-se a opção para adicionar partições
+1-Select the option to add partitions
 Command (m for help): n
 
-2-Definiu-se como partição primária selecionando a opção “p”
+2-Defined as primary partition by selecting option “p”
 
-3-Escolheu-se o número da partição como “1”
+3-The partition number was chosen as “1”
 Partition number (1 - 4): 1
 
-4-No passo seguinte deixamos em branco e pressionamos ENTER, porque por padrão ele busca
-o primeiro cilindro livre no disco e começará ali o sistema de ficheiros da partição que está a ser
-criada, algo como o seguinte:
+4-In the next step we leave it blank and press ENTER, because by default it searches
+the first free cylinder on the disk and the file system of the partition being
+created, something like the following:
 First cylinder (1-1566, default 1):
 
-5-Definiu-se o tamanho da partição que neste caso são 5Gb, algo como o seguinte:
+5-The size of the partition was defined, which in this case is 5Gb, something like the following:
 Last cylinder, +cylinders or +size{K,M,G} (1-1566, default 1566): +5GB
-Adicionou-se as demais partições com os respectivos tamanhos (GB para Gigabytes e MB para
-Megabytes)repetindo os mesmos passos, desde o passo 1.
 
-Depois que terminar para que as partições fossem guardadas escolheu-se a correspondente
-opção:
+The other partitions were added with their respective sizes (GB for Gigabytes and MB for
+Megabytes) repeating the same steps from step 1.
+
+After finishing so that the partitions were saved, the corresponding one was chosen
+option:
 Command (m for help): w
 
-Reiniciou-se a máquina só para garantir que as mudanças sejam aplicadas
+The machine was restarted just to ensure that the changes were applied
 [root@lombe ~]# reboot
 
-Criou-se o Sistema de ficheiros das partições para os volumes físicos (Formatação ext4)
+The partition file system was created for the physical volumes (ext4 formatting)
 [root@lombe ~]# mkfs.ext4 /dev/sdc1
 [root@lombe ~]# mkfs.ext4 /dev/sdc2
 
-CRIAÇÃO DE VG, PV, LVM
+VG, PV, LVM CREATION
 
-Criou-se os PVs (Physical Volumes)
+PVs (Physical Volumes) were created
 [root@lombe ~]# pvcreate /dev/sdc1
 [root@lombe ~]# pvcreate /dev/sdc2
 
-Criou-se o VG (Volume Group) chamado “vgvendafinancas”
+VG (Volume Group) was created called “vgvendafinancas”
 [root@lombe ~]# vgcreate vgvendafinancas /dev/sdc1 /dev/sdc2
 
-Criou-se os 4 LVs (Logical Volumes) de cada 2Gb no VG vgvendafinancas, seguindo uma
-nomeclatura do tipo “lvm1, lvm2, . . . , lvmn ”
+The 4 LVs (Logical Volumes) of each 2Gb were created in the VG vgvendafinancas, following a
+naming like “lvm1, lvm2, . . . , lvmn”
 [root@lombe ~]# lvcreate –n lv1 –L 2GB vgvendafinancas
 [root@lombe ~]# lvcreate –n lv2 –L 2GB vgvendafinancas
 [root@lombe ~]# lvcreate –n lv3 –L 2GB vgvendafinancas
 [root@lombe ~]# lvcreate –n lv4 –L 2GB vgvendafinancas
-Criou-se o Sistema de ficheiros dos LVMs criados (Formatação)
+
+The file system of the created LVMs was created (Formatting)
 [root@lombe ~]# mkfs.ext4 /dev/vgvendafinancas/lv1
 [root@lombe ~]# mkfs.ext4 /dev/vgvendafinancas/lv2
 [root@lombe ~]# mkfs.ext4 /dev/vgvendafinancas/lv3
 [root@lombe ~]# mkfs.ext4 /dev/vgvendafinancas/lv4
 
-Criou-se os diretórios onde as LVMs serão montadas para melhor organização
+Directories were created where the LVMs will be mounted for better organization
 [root@lombe ~]# mkdir /vgvendafinancas /vgvendafinancas/lv1 /vgvendafinancas/lv2
 [root@lombe ~]# mkdir /vgvendafinancas/lv3 /vgvendafinancas/lv4
 
-Para que as LVs sejam montados permanentemente ou seja, ao iniciar a máquina editou-se o
-ficheiro “/etc/fstab” adicionando-se as configurações no final do ficheiro
+So that the LVs are mounted permanently, that is, when starting the machine, the
+file “/etc/fstab” adding the settings at the end of the file
 [root@lombe ~]# nano /etc/fstab
 /dev/vgvendafinancas/lv1 /vgvendafinancas/lv1/ nfs defaults 0 0
 /dev/vgvendafinancas/lv2 /vgvendafinancas/lv2/ nfs defaults 0 0
 /dev/vgvendafinancas/lv3 /vgvendafinancas/lv3/ nfs defaults 0 0
 /dev/vgvendafinancas/lv4 /vgvendafinancas/lv4/ nfs defaults 0 0
 
-CRIAÇÃO DE SWAP
+SWAP CREATION
 
-Criamos duas partições primárias de 512MB sdc3 e sdc4
+We created two primary partitions of 512MB sdc3 and sdc4
 
-1-Selecionou-se a opção para editar o tipo das partições
+1-Select the option to edit the type of partitions
 Command (m for help): t
 
-2-Escolheu-se o tipo de partição “82” (Valor Hexadecimal para o tipo de partição “Linux
+2-The partition type “82” was chosen (Hexadecimal value for the partition type “Linux
 swap/Solaris”)
 Hex code (type L to list codes):82
 
-Depois que terminar para que as partições fossem guardadas escolheu-se a correspondente
-opção:
+After finishing so that the partitions were saved, the corresponding one was chosen
+option:
 Command (m for help): w
 
-Criou-se o Sistema de ficheiros das partições para SWAP (Formatação SWAP)
+Created the Partition File System for SWAP (SWAP Formatting)
 [root@lombe ~]# mkswap /dev/sdc3
 [root@lombe ~]# mkswap /dev/sdc4
 
-Activou-se as memórias SWAP
+SWAP memories have been activated
 [root@lombe ~]# swapon /dev/sdc3
 [root@lombe ~]# swapon /dev/sdc4
 
-Para que as memórias SWAP sejam montadas permanentemente ou seja, ao iniciar a máquina
-editou-se o ficheiro “/etc/fstab” adicionando-se as configurações no final do ficheiro
+So that the SWAP memories are mounted permanently i.e. when starting the machine
+the “/etc/fstab” file was edited adding the settings at the end of the file
 [root@lombe ~]# nano /etc/fstab
 /dev/sdc3 swap swap defaults 0 0
 /dev/sdc4 swap swap defaults 0 0
 
 NFSv4
 
-Criou-se os diretórios para partilhar
+Directories were created to share
 [root@lombe ~]# mkdir /local /local/geral /local/financas /local/recursos_humanos
 /local/anuncios_refeitorio
 [root@lombe ~]# mkdir /partilha /partilha/nfs
 
-Criou-se os mesmos diretórios nas máquinas clientes de maneiras que os locais de montagem
-sejam os mesmos.
+Created the same directories on client machines in ways that the mount locations
+are the same.
 
-Definiu-se os diretórios e as máquinas com as quais os diretórios serão partilhados
+The directories and machines with which the directories will be shared have been defined
 [root@lombe ~]# nano /etc/exports
 /local/geral/ kwanza(rw,sync,no_root_squash) gazela(rw,sync,no_root_squash)
 /local/financas/ kwanza(rw,sync,no_root_squash)
@@ -556,16 +554,16 @@ gazela(rw,sync,no_root_squash)
 gazela(rw,sync,no_root_squash)
 /partilha/nfs/ kwanza(rw,sync,no_root_squash) gazela(rw,sync,no_root_squash)
 
-Iniciou-se o daemon que permite que os clientes NFS descubram qual porta o servidor está
-utilizando, iniciou-se o daemon NFS e activou-se os serviços para iniciarem ao arrancar a
-máquina.
+Started the daemon that allows NFS clients to find out which port the server is on
+using it, the NFS daemon was started and the services were enabled to start when booting the
+machine.
 [root@lombe ~]# service rpcbind start
 [root@lombe ~]# service nfs start
 [root@lombe ~]# chkconfig rpcbind on
 [root@lombe ~]# chkconfig nfs on
 
-Para que os clientes NIS montem as pastas compartilhadas permanentemente editou-se o
-ficheiro fstab nos clientes (kwanza e gazela):
+For NIS clients to mount shared folders permanently, edit the
+fstab file on clients (kwanza and gazela):
 [root@lombe ~]# nano /etc/fstab
 lombe:/local/geral/ /local/geral/ nfs defaults 0 0
 lombe:/local/financas / /local/financas/ nfs defaults 0 0
@@ -573,15 +571,16 @@ lombe:/local/recursos_humanos/ /local/recursos_humanos/ nfs defaults 0 0
 lombe:/local/anuncios_refeitorio/ /local/anuncios_refeitorio/ nfs defaults 0 0
 lombe:/partilha/nfs/ /partilha/nfs/ nfs defaults 0 0
 
-Segurança
+Security
 
-Para permitir apenas os membros do grupo “financas” possam fazer alterações nos ficheiros do
-diretório /local/financas/, adicionou-se o grupo financas
+To allow only members of the “finance” group to make changes to the files
+/local/financas/ directory, the financas group was added
 [root@lombe ~]# groupadd financas
 
-Definiu-se o grupo financas como proprietário do diretório /local/financas/
+The financas group was defined as the owner of the directory /local/financas/
 [root@lombe ~]# chgrp financas /local/financas
-Mudou-se as permissões do diretório /local/financas/
+
+Changed the permissions of the /local/financas/ directory
 [root@lombe ~]# chmod u=rx,g=rwx,o=rx /local/financas
 
 Samba
