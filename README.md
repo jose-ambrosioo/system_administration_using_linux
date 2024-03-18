@@ -277,7 +277,7 @@ NIS doing:
 NOTE2: When resetting the password of a user created without a password, delete the encrypted password in the
 /etc/shadow file on NIS server
 
-Segurança
+Security
 
 To allow only the admin user to invoke the “su” command on any machine or
 server, on all machines the “wheel” group was defined as the owner of the su command:
