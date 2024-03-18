@@ -16,6 +16,7 @@ Obs: Desactivou-se o firewall “iptables” nos servidores e depois activou-se:
 
 Servidor “kwanza”
 Tabela de partições do servidor kwanza
+![image](https://github.com/jose-ambrosioo/system_administration_using_linux/assets/59221796/13b87c51-c7b2-4700-b609-5860e1c0a1c8)
 
 Hostname/IP estático
 Nome da máquina “kwanza.bestsoft.com”
@@ -311,6 +312,7 @@ PermitRootLogin yes
 
 Configuração do servidor “lombe”
 Tabela de partições do servidor lombe
+![image](https://github.com/jose-ambrosioo/system_administration_using_linux/assets/59221796/36421297-6a9c-4dde-817a-716188325630)
 
 Hostname/IP estático
 Nome da máquina “lombe.bestsoft.com”
