@@ -244,8 +244,8 @@ Added NIS user accounts
 [root@kwanza /]# useradd –p maria –d /nishome/maria maria -c 'Maria' maria
 [root@kwanza /]# useradd –p teresa –d /nishome/teresa -c 'Teresa' teresa
 [root@kwanza /]# useradd –p admin –d /nishome/admin admin -c 'Admin' admin
-[root@kwanza /]# useradd –p admin_estagiario –d /nishome/admin_estagiario admin_
-estagiario -c 'Admin_estagiario' admin_estagiario
+[root@kwanza /]# useradd –p admin_intern –d /nishome/admin_intern admin_
+intern -c 'Admin_intern' admin_intern
 
 NIS user passwords have been configured
 [root@kwanza]# passwd usuario
@@ -289,19 +289,19 @@ Changed the permissions of /bin/su
 The user “admin” was added to the “wheel” group
 [root@kwanza /]# usermod –G wheel admin
 
-So that the user “admin_estagiario” only has permission to restart Apache Web
-Server (httpd restart) on the kwanza server and for users admin and admin_estagiario
+So that the user “admin_intern” only has permission to restart Apache Web
+Server (httpd restart) on the kwanza server and for users admin and admin_intern
 have additional privileges, the following was added to the file:
 [root@kwanza /]# visudo
-admin_estagiario kwanza.bestsoft.com=/sbin/service httpd restart
+admin_intern kwanza.bestsoft.com=/sbin/service httpd restart
 admin ALL=(ALL) ALL
-admin_estagiario ALL=(ALL) ALL
+admin_intern ALL=(ALL) ALL
 
-So that only the two administrator accounts admin and admin_estagiario and root can
+So that only the two administrator accounts admin and admin_intern and root can
 login to the kwanza and lombe servers, the /etc/ssh/sshd_config file was edited in the
 mentioned servers and the following lines were added:
 [root@kwanza /]# nano /etc/ssh/sshd_config
-AllowUsers admin admin_estagiario root
+AllowUsers admin admin_intern root
 DenyUsers joao ana vasco maria teresa
 PermitRootLogin yes
 
