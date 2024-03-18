@@ -585,17 +585,17 @@ Changed the permissions of the /local/financas/ directory
 
 Samba
 
-Instalou-se os pacotes necessários para o samba
+The necessary packages for samba have been installed
 [root@lombe ~]# yum install -y samba samba-common samba-client
 
-Criou-se o directório de partilha samba
+The samba sharing directory was created
 [root@lombe ~]# mkdir -p /samba/share
 
-Alterou-se as permissões do directório de partilha samba para que todo utilizador possa ler,
-fazer alteração e executar dentro do directório
+The permissions of the samba share directory were changed so that every user can read it,
+make change and execute within the directory
 [root@lombe ~]# chmod 777 /samba/share
 
-Habilitou-se o acesso aos diretórios home dos utilizadores samba no ficheiro de configuração:
+Access to samba users' home directories was enabled in the configuration file:
 [root@lombe ~]# nano /etc/samba/smb.conf
 workgroup = WORKGROUP
  hosts allow = 127. 192.168.9.
@@ -610,43 +610,44 @@ security = share
  directory mode = 0777
  share modes = yes
 
-Definir as passwords samba dos users adicionados
+Set samba passwords for added users
 [root@lombe ~]# smbpasswd -a lombe
 
-Para permitir que todos os utilizadores possam escrever num mounting point
+To allow all users to write to a mounting point
 [root@lombe ~]# setsebool -P samba_export_all on
 
-De maneiras que o SI não bloqueie o acesso dos utilizadores ao samba, habilitou-se as
-seguintes configurações. O “ -P ” significa permanente
+So that the SI does not block users' access to samba, the
+following settings. The “-P” means permanent
 [root@lombe ~]# setsebool -P use_samba_home_dirs on
 [root@lombe ~]# setsebool -P samba_enable_home_dirs on
 
-Iniciou-se o serviço e activou-se o serviço para iniciar ao arrancar a máquina
+The service was started and the service was enabled to start when the machine was started
 [root@lombe ~]# service smb start
 [root@lombe ~]# chkconfig smb on
 
-Configuração do cliente “gazela”
+“gazelle” client configuration
 
 YUM/FTP
 
-PARA REPOSITÓRIO DO CentOS 6
-Montou-se a Drive do DVD onde estava a imagem do CentOS 6
+FOR CentOS 6 REPOSITORY
+
+The DVD Drive was mounted where the CentOS 6 image was located
 [root@lombe ~]# mount /dev/cdrom /media
 
-Foi-se para o directório onde estava montada a Drive do DVD com a imagem do RHEL6 e para o
-directório Packages e instalou-se os seguintes pacotes
+We went to the directory where the DVD Drive with the RHEL6 image was mounted and to the
+Packages directory and installed the following packages
 [root@lombe ~]# cd /media/CentOS_6.7_Final/Packages/
 [root@lombe ~]# rpm -ivh vsftpd*
 
-A pasta do repositório “/var/ftp/pub/repo” foi criada automaticamente após instalação do FTP
-Editou-se o ficheiro que contém as configurações do YUM e alterou-se a linha do ftp para
+The repository folder “/var/ftp/pub/repo” was automatically created after installing FTP
+The file containing the YUM settings was edited and the ftp line was changed to
 “baseurl=ftp:/// kwanza/pub/repo”
 
 FTP
 
-Configurou-se da mesma forma que o FTP do lombe
+Configured in the same way as the lombe FTP
 
 NIS Cliente
 
-Configurou-se da mesma forma que o NIS Slave do lombe, com a excecção do comando
+It was configured in the same way as the lombe NIS Slave, with the exception of the command
 “/usr/lib64/yp/ypinit –s”
