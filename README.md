@@ -22,7 +22,9 @@ Static hostname/IP
 <br>Machine IP “192.168.10.1”
 
 **YUM/FTP**
-<br>FOR RHEL 6 REPOSITORY
+
+**FOR RHEL 6 REPOSITORY**
+
 <br>The DVD Drive was mounted where the RHEL 6 image was located
 <br>[root@kwanza ~]# mount /dev/cdrom /media
 
