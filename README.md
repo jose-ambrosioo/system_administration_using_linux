@@ -22,7 +22,6 @@ Static hostname/IP
 <br>Machine IP “192.168.10.1”
 
 **YUM/FTP**
-
 **FOR RHEL 6 REPOSITORY**
 
 <br>The DVD Drive was mounted where the RHEL 6 image was located
