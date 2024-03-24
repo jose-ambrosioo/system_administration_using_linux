@@ -1,4 +1,4 @@
-![image](https://github.com/jose-ambrosioo/system_administration_using_linux/assets/59221796/6868b4f3-9766-4382-9ce6-bc961d752550)# system_administration_using_linux
+# system_administration_using_linux
 (LINUX (RED HAT ENTERPRISE, CENTOS, UBUNTU) | WINDOWS)
 
 Implemented an easily scalable network infrastructure based on business volume.  Configured the following services: IP, FTP, YUM, HTTP, DNS, NIS, DHCP, NFSv4, Samba, and openLAD. 
