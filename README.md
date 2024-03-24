@@ -4,6 +4,7 @@
 Implemented an easily scalable network infrastructure based on business volume.  Configured the following services: IP, FTP, YUM, HTTP, DNS, NIS, DHCP, NFSv4, Samba, and openLAD. 
 
 **Introduction**
+
 In this project, I implemented a 100% Open Source Linux network infrastructure for a company.
 
 Note: the texts in green are commands executed in the terminal as root, and the texts in blue are changes to files.
