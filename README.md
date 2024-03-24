@@ -24,7 +24,7 @@ Static hostname/IP
 **YUM/FTP**
 **FOR RHEL 6 REPOSITORY**
 
-<br>The DVD Drive was mounted where the RHEL 6 image was located
+The DVD Drive was mounted where the RHEL 6 image was located
 <br>[root@kwanza ~]# mount /dev/cdrom /media
 
 We went to the directory where the DVD Drive with the RHEL6 image is mounted and to the Packages directory and installed the following packages
