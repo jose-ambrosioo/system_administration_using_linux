@@ -83,7 +83,7 @@ HTTP was activated at the right levels, and the service started
 <br>[root@kwanza ~]# chkconfig httpd on
 <br>[root@kwanza ~]# service httpd start
 
-<br>3 – Configure httpd, adding the following configuration
+3 – Configure httpd, adding the following configuration
 <br>[root@kwanza ~]# nano /etc/httpd/conf/httpd.conf
 <br><VirtualHost *:80>
 <br> ServerAdmin root@kwanza.bestsoft.com
