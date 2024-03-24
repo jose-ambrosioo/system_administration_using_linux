@@ -593,7 +593,7 @@ The service was started and the service was enabled to start when the machine wa
 <br>[root@lombe ~]# service smb start
 <br>[root@lombe ~]# chkconfig smb on
 
-<br>“gazelle” client configuration
+“gazelle” client configuration
 
 **YUM/FTP**
 
