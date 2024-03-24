@@ -1,47 +1,47 @@
 # system_administration_using_linux
 (LINUX (RED HAT ENTERPRISE, CENTOS, UBUNTU) | WINDOWS)
 
-<br>Implemented an easily scalable network infrastructure based on business volume.  Configured the following services: IP, FTP, YUM, HTTP, DNS, NIS, DHCP, NFSv4, Samba, and openLAD. 
+Implemented an easily scalable network infrastructure based on business volume.  Configured the following services: IP, FTP, YUM, HTTP, DNS, NIS, DHCP, NFSv4, Samba, and openLAD. 
 
 **Introduction**
-<br>In this project, I implemented a 100% Open Source Linux network infrastructure for a company.
+In this project, I implemented a 100% Open Source Linux network infrastructure for a company.
 
-<br>Note: the texts in green are commands executed in the terminal as root, and the texts in blue are changes to files.
+Note: the texts in green are commands executed in the terminal as root, and the texts in blue are changes to files.
 
-<br>Note: The “iptables” firewall was disabled on the servers and then activated:
+Note: The “iptables” firewall was disabled on the servers and then activated:
 <br>#service iptables off
 <br>#iptables –F
 
-<br>“kwanza” server
+“kwanza” server
 <br>kwanza server partition table
 ![image](https://github.com/jose-ambrosioo/system_administration_using_linux/assets/59221796/13b87c51-c7b2-4700-b609-5860e1c0a1c8)
 
-<br>Static hostname/IP
+Static hostname/IP
 <br>Machine name “kwanza.bestsoft.com”
 <br>Machine IP “192.168.10.1”
 
-<br>YUM/FTP
+YUM/FTP
 <br>FOR RHEL 6 REPOSITORY
 <br>The DVD Drive was mounted where the RHEL 6 image was located
 <br>[root@kwanza ~]# mount /dev/cdrom /media
 
-<br>We went to the directory where the DVD Drive with the RHEL6 image is mounted and to the Packages directory and installed the following packages
+We went to the directory where the DVD Drive with the RHEL6 image is mounted and to the Packages directory and installed the following packages
 
-<br>[root@kwanza ~]# cd /media/RHEL-6.6\ Server.x86_64/Packages/
+[root@kwanza ~]# cd /media/RHEL-6.6\ Server.x86_64/Packages/
 <br>[root@kwanza ~]# rpm -ivh vsftpd*
 <br>[root@kwanza ~]# rpm -ivh deltarpm*
 <br>[root@kwanza ~]# rpm -ivh python-deltarpm*
 <br>[root@kwanza ~]# rpm -ivh createrepo*
 
-<br>After installing FTP, the repository folder “/var/ftp/pub/repo” was automatically created.
+After installing FTP, the repository folder “/var/ftp/pub/repo” was automatically created.
 
-<br>The repository was created using the /var/ftp/pub/repo/Packages directory as its database
+The repository was created using the /var/ftp/pub/repo/Packages directory as its database
 <br>[root@kwanza ~]# createrepo --database /var/ftp/pub/repo/Packages/
 
-<br>The file containing the YUM settings has been edited.
+The file containing the YUM settings has been edited.
 
-<br>[root@kwanza ~]# nano /etc/yum.repos.d/rhel-source.repo
-<br><br>[rhel-source]
+[root@kwanza ~]# nano /etc/yum.repos.d/rhel-source.repo
+<br>[rhel-source]
 <br>name=Red Hat Enterprise Linux $releasever - $basearch - Source
 <br>baseurl=file:///var/ftp/pub/repo
 <br>enabled=1
@@ -51,12 +51,12 @@
 **FTP**
 <br>The vsftpd service was enabled to start when starting the machine
 
-<br>[root@kwanza ~]# chkconf vsftpd on
+[root@kwanza ~]# chkconf vsftpd on
 
-<br>Start the service
+Start the service
 <br>[root@kwanza ~]# service vsftpd start
 
-<br>View FTP access
+View FTP access
 <br>[root@kwanza ~]# getsebool -a | grep ftp
 <br>allow_ftpd_anon_write --> off
 <br>allow_ftpd_full_access --> off
