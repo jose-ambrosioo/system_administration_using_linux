@@ -1,7 +1,7 @@
 # system_administration_using_linux
 (LINUX (RED HAT ENTERPRISE, CENTOS, UBUNTU) | WINDOWS)
 
-Implemented an easily scalable network infrastructure based on business volume.  Configured the following services: IP, FTP, YUM, HTTP, DNS, NIS, DHCP, NFSv4, Samba, and openLAD. 
+Designed and implemented a 100% Open Source Linux network infrastructure for a company that was easily scalable based on business volume.  Configured the following services: IP, FTP, YUM, HTTP, DNS, NIS, DHCP, NFSv4, Samba, and openLAD. 
 
 **Introduction**
 
